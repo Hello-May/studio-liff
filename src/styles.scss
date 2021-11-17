@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+
+// @import "~@angular/material/theming";
+// https://ithelp.ithome.com.tw/articles/10197670
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+// @import url(//fonts.googleapis.com/earlyaccess/notosanstc.css);
+// @import url(//fonts.googleapis.com/icon?family=Material+Icons);
+
+html {
+  background-color: #FAFAFA;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline{
+  background-color: white;
+}

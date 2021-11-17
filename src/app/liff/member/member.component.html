@@ -1,0 +1,92 @@
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div *ngIf="!loading" class="content">
+  <h2>學員專區</h2>
+
+  <img
+    [src]="'https://firebasestorage.googleapis.com/v0/b/aiii-bot-platform-tw/o/system%2Fnopic.jpg?alt=media&token=3e092315-9fe8-4b2f-abdb-c3eacd52fb80'"
+    alt="" class="img">
+
+  <!-- <span id="picture" class="image" *ngIf="imgUrl" [style.background-image]="'url('+imgUrl+')'" #picture
+    (error)="picture.src = 'https://firebasestorage.googleapis.com/v0/b/aiii-bot-platform-tw/o/system%2Fnopic.jpg?alt=media&token=3e092315-9fe8-4b2f-abdb-c3eacd52fb80'"
+    alt="預覽照片">
+  </span> -->
+
+  <h6>UID：{{this.uid}}</h6>
+
+  <form [formGroup]="form">
+
+    <mat-form-field appearance="outline">
+      <mat-label>暱稱</mat-label>
+      <input matInput formControlName="displayName" [required]="true">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>大頭照</mat-label>
+      <input matInput formControlName="pictureUrl" [required]="true">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>狀態訊息</mat-label>
+      <input matInput formControlName="statusMessage" [required]="false">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>身份</mat-label>
+      <mat-select formControlName="role" [required]="true">
+        <mat-option *ngFor="let role of roleList" [value]="role">
+          {{role}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+    <mat-form-field appearance="outline">
+      <mat-label>性別</mat-label>
+      <mat-select formControlName="gender" [required]="true">
+        <mat-option *ngFor="let gender of genderList" [value]="gender">
+          {{gender}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>生日</mat-label>
+      <input matInput [matDatepicker]="picker" [max]="maxDate" formControlName="birth" [required]="false" readonly>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>手機</mat-label>
+      <input matInput formControlName="phone" [required]="false" placeholder="必須為 [09] 開頭的10碼數字">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>信箱</mat-label>
+      <input matInput formControlName="email" [required]="false" placeholder="yourname@email.com" >
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>關於我</mat-label>
+      <textarea matInput formControlName="aboutMe" [required]="false"></textarea>
+    </mat-form-field>
+
+  </form>
+
+  <div>
+    <ng-container *ngIf="this.form.disabled">
+      <button mat-raised-button color="primary" (click)="_btnEdit(true)" [disabled]="sending" *ngIf="form">編輯</button>
+      <button mat-raised-button color="warn" (click)="_btnClose()" [disabled]="sending" *ngIf="form">關閉</button>
+    </ng-container>
+
+    <ng-container *ngIf="this.form.enabled">
+      <button mat-raised-button color="primary" (click)="_btnSave()" [disabled]="sending||!form.valid"
+        *ngIf="form">儲存</button>
+      <button mat-raised-button color="warn" (click)="_btnEdit(false)" [disabled]="sending" *ngIf="form">取消</button>
+    </ng-container>
+  </div>
+
+  <br>
+
+</div>
