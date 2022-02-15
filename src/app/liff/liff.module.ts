@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
+import { LiffService } from './liff.service';
+
 @NgModule({
   declarations: [],
   imports: [
@@ -14,6 +16,8 @@ import { RouterModule } from '@angular/router';
       { path: '**', redirectTo: 'news' }
     ])
   ],
-  providers: []
+  providers: [
+    LiffService
+  ]
 })
 export class LiffModule { }

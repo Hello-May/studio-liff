@@ -15,12 +15,13 @@ declare interface LineUser {
   userId: string,
   displayName: string,
   pictureUrl?: string,
-  statusMessage?: string,
+  statusMessage?: string
   phone?: string;
+  email?: string;
 }
 
 declare interface Member {
-  userId: LineUser['userId'],
+  uid: LineUser['userId'],
   displayName: string,
   pictureUrl: string,
   statusMessage?: string,

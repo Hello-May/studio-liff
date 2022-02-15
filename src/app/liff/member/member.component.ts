@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { dev, LiffId } from 'src/app/shared/setting';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Api, LiffId } from 'src/app/shared/setting';
 import * as moment from 'moment';
 import { Gender, Role } from 'src/app/shared/enum';
-
+import { LiffService } from './../liff.service';
+import { HttpClient } from '@angular/common/http';
+import * as _ from 'lodash';
 @Component({
   selector: 'app-member',
   templateUrl: './member.component.html',
@@ -28,90 +30,83 @@ export class MemberComponent implements OnInit {
   constructor(
     private title: Title,
     private fb: FormBuilder,
+    private liffService: LiffService,
+    private http: HttpClient
   ) {
     this.title.setTitle(`學員專區`);
   }
 
   async ngOnInit(): Promise<void> {
-    if (dev.local) {
-      this.uid = dev.uid;
-      this.lineUser = {
-        userId: dev.uid,
-        displayName: dev.displayName,
-        pictureUrl: 'https://my.picture',
-        statusMessage: '',
-        phone: '0988777666'
-      };
-    } else {
-      // init liff
-      // -> backend -> update lineUser
-    }
-
-    const result = await this.getMember(this.uid);
-    this.member = result.data;
+    await this.initLiff();
+    this.member = await this.getMember(this.uid);
 
     this.form = this.fb.group({
-      // userId: [this.uid, [Validators.required]],
+      uid: [this.uid || this.member?.uid, [Validators.required]],
       displayName: [this.member?.displayName || this.lineUser?.displayName || '', [Validators.required]],
       pictureUrl: [this.member?.pictureUrl || this.lineUser?.pictureUrl || '', [Validators.required]],
       statusMessage: [this.member?.statusMessage || this.lineUser?.statusMessage || ''],
       role: [this.member?.role || '', [Validators.required]],
       gender: [this.member?.gender || '', [Validators.required]],
       birth: [this.member?.birth || ''],
-      phone: [this.member?.phone || this.lineUser?.phone || '', [Validators.pattern(/^09\d{8}$/)]],
+      phone: [this.member?.phone || '', [Validators.pattern(/^09\d{8}$/)]],
       email: [this.member?.email || '', [Validators.email]],
       aboutMe: [this.member?.aboutMe || '']
     });
-
-    if (result.status === '200') this._btnEdit(false);
-    else this._btnEdit(true);
 
     console.log('this.form', this.form.value);
     this.loading = false;
   }
 
-  private getMember(uid: LineUser['userId']) {
-    // 取得 uid 後，打後端拿 member，我想用訂閱方式刷新畫面
-    return { status: '400', message: 'error', data: undefined };
-    return {
-      status: '200', message: 'success', data: {
-        userId: dev.uid,
-        displayName: dev.displayName,
-        pictureUrl: 'https://my.picture',
-        statusMessage: 'ya~',
-        role: Role.trainee,
-        gender: Gender.female,
-        birth: new Date('2000/5/5'),
-        phone: '0988777666',
-        email: 'may@abc.com',
-        aboutMe: 'blabla',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      } as Member
-    };
+  private async initLiff() {
+    await this.liffService.initLiff(LiffId.member);
+    if (!this.liffService.isLoggedIn()) {
+      this.liffService.login();
+      return;
+    }
+    this.uid = this.liffService.profile.userId || 'Ue7239b947f52a9648e608c54a51ab631';
+    this.lineUser = this.liffService.profile;
+    console.log('this.lineUser', this.lineUser);
+    if (!this.uid) throw Error('此APP不支援外部瀏覽器模式');
   }
 
-  _btnEdit(isEdit: boolean) {
-    if (isEdit) this.form.enable();
-    else this.form.disable();
+  private async getMember(uid: LineUser['userId']) {
+    try {
+      const result = await this.http.get(`https://test.may.services/api/member/${uid}`).toPromise() as Member;
+      console.log('getMember result', result);
+      return result;
+    } catch (error) {
+      console.log('getMember error', error);
+      return undefined;
+    }
   }
 
-  _btnSave() {
+  async _btnSave() {
     if (confirm('確定儲存？')) {
       this.sending = true;
-      // backend -> save member
-      // 畫面資料要刷新
-      alert('已儲存');
-      this._btnEdit(false);
+      try {
+        const data = {
+          ...this.form.value,
+          birth: moment(this.form.get('birth')?.value).format('YYYY-MM-DD')
+        };
+        console.log('_btnSave data', data);
+        const result = this.member ?
+          await this.http.patch(`${Api.backend_dev}/member/${this.uid}`, data, { responseType: 'text' }).toPromise() :
+          await this.http.post(`${Api.backend_dev}/member`, data, { responseType: 'text' }).toPromise();
+        console.log('_btnSave result', result);
+        alert('已儲存');
+      } catch (error) {
+        console.log('_btnSave error', _.get(error, 'status') ?? '??', error);
+        alert('儲存失敗，請稍候再試⋯⋯');
+      }
       this.sending = false;
     }
   }
 
   _btnClose() {
-    // liff.closeWindow();
-    // this.liffService.liff.closeWindow();
+    liff.closeWindow();
   }
 
+  get Role() { return Role; }
   get roleList() { return Object.values(Role); }
   get genderList() { return Object.values(Gender); }
 

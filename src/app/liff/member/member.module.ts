@@ -19,7 +19,7 @@ import { MemberComponent } from './member.component';
     RouterModule.forChild([
       { path: '', component: MemberComponent },
       { path: '**', redirectTo: '' }
-    ]),
+    ])
   ]
 })
 export class MemberModule { }

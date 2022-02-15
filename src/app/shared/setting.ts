@@ -1,9 +1,14 @@
-
+// 本地開發
+// localStorage.setItem('dev-liff-config', JSON.stringify({
+//   "userId": "Ue7239b947f52a9648e608c54a51ab631",
+//   "displayName": "May",
+//   "pictureUrl": "https://storage.googleapis.com/aiii-bot-platform-tw/system/nopic.jpg"
+// }))
 
 export const dev = {
-  local: true,
-  uid: 'U93f49f2c501c42906c219e0e0c0a79a0',
-  displayName: 'May'
+  uid: 'Ue7239b947f52a9648e608c54a51ab631',
+  displayName: 'May',
+  pictureUrl: "https://storage.googleapis.com/aiii-bot-platform-tw/system/nopic.jpg"
 }
 
 export enum LineInfo {
@@ -11,12 +16,13 @@ export enum LineInfo {
 }
 
 export enum LiffId {
-  member = '1655701927-bLjX7LW1',
-  news_list = '1655701927-e3R18xlJ',
-  news_page = '1655701927-56pdKjEY',
-  product = '1655701927-2lQLq4R3'
+  member = '1656668233-b9v8BE84',
+  news_list = '1656668233-3prlWRlx',
+  news_page = '1656668233-EV6e7vex',
+  // product = '1655701927-2lQLq4R3'
 }
 
 export enum Api {
   // pushMsg = 'https://cheng-3m-line-dialogflow-dnz3lqp74q-de.a.run.app/push-msg'
+  backend_dev = 'https://test.may.services/api',
 }

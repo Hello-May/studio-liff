@@ -3,16 +3,10 @@
 <div *ngIf="!loading" class="content">
   <h2>學員專區</h2>
 
-  <img
-    [src]="'https://firebasestorage.googleapis.com/v0/b/aiii-bot-platform-tw/o/system%2Fnopic.jpg?alt=media&token=3e092315-9fe8-4b2f-abdb-c3eacd52fb80'"
-    alt="" class="img">
+  <img [src]="this.form.get('pictureUrl')?.value"
+    (error)="img.src='https://storage.googleapis.com/aiii-bot-platform-tw/system/nopic.jpg'" #img alt="" class="img">
 
-  <!-- <span id="picture" class="image" *ngIf="imgUrl" [style.background-image]="'url('+imgUrl+')'" #picture
-    (error)="picture.src = 'https://firebasestorage.googleapis.com/v0/b/aiii-bot-platform-tw/o/system%2Fnopic.jpg?alt=media&token=3e092315-9fe8-4b2f-abdb-c3eacd52fb80'"
-    alt="預覽照片">
-  </span> -->
-
-  <h6>UID：{{this.uid}}</h6>
+  <h6>UID：{{form.get('uid')?.value}}</h6>
 
   <form [formGroup]="form">
 
@@ -34,7 +28,8 @@
     <mat-form-field appearance="outline">
       <mat-label>身份</mat-label>
       <mat-select formControlName="role" [required]="true">
-        <mat-option *ngFor="let role of roleList" [value]="role">
+        <mat-option *ngFor="let role of roleList" [value]="role"
+          [disabled]="role===Role.manager||role===Role.freelancer">
           {{role}}
         </mat-option>
       </mat-select>
@@ -64,7 +59,7 @@
 
     <mat-form-field appearance="outline">
       <mat-label>信箱</mat-label>
-      <input matInput formControlName="email" [required]="false" placeholder="yourname@email.com" >
+      <input matInput formControlName="email" [required]="false" placeholder="yourname@email.com">
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -75,16 +70,9 @@
   </form>
 
   <div>
-    <ng-container *ngIf="this.form.disabled">
-      <button mat-raised-button color="primary" (click)="_btnEdit(true)" [disabled]="sending" *ngIf="form">編輯</button>
-      <button mat-raised-button color="warn" (click)="_btnClose()" [disabled]="sending" *ngIf="form">關閉</button>
-    </ng-container>
-
-    <ng-container *ngIf="this.form.enabled">
-      <button mat-raised-button color="primary" (click)="_btnSave()" [disabled]="sending||!form.valid"
-        *ngIf="form">儲存</button>
-      <button mat-raised-button color="warn" (click)="_btnEdit(false)" [disabled]="sending" *ngIf="form">取消</button>
-    </ng-container>
+    <button mat-raised-button color="primary" (click)="_btnSave()" [disabled]="sending||!form.valid"
+      *ngIf="form">儲存</button>
+    <button mat-raised-button color="warn" (click)="_btnClose()" [disabled]="sending" *ngIf="form">關閉</button>
   </div>
 
   <br>
